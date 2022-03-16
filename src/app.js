@@ -1,6 +1,6 @@
 import express from 'express';
-import fs from 'fs';
-
+import Archivo from '../tools/archivo.js';
+import { counterArray, itemsArray } from '../tools/funciones.js'
 
 const app = express();
 const PORT = 8080;
@@ -9,19 +9,36 @@ const server = app.listen(PORT, (req,res) => {
     console.log(`Server on port: ${server.address().port}`)
 })
 
-app.get('/items', async (req, res) => {
+let items = 0;
+let itemRandom = 0;
+
+app.get('/items', async(req, res) => {
     try{
-        await fs.promises.readFile('../tools/productos.txt', 'utf-8')
-        foreach(product => res.send({items:[`${product.item}`], cantidad: "(cantidad de productos)"}))
+        const file = new Archivo('./data/productos.txt');
+        const content = await file.leer();
+        const parsedContent = JSON.parse(content);
+        const arrayContent  = parsedContent.map(item => item.title)
+        res.send(`{items: ${arrayContent}, cantindad: ${arrayContent.length}}`);
+        ++items
     } catch (err){
         console.log(`Can't read file. Error: ${err}`)
     }
 })
 
-app.get('/item-random', (req, res) => {
-    res.send({item:'producto'})
+app.get('/item-random', async(req, res) => {
+    try {
+        const file = new Archivo('../desafio/data/productos.txt');
+        const content = await file.leer();
+        const parsedContent = JSON.parse(content);
+        const arrayContent  = parsedContent.map(item => item.title)
+        const random  = (Math.random() * arrayContent.length).toFixed()
+        res.send(`{item: ${arrayContent[random]}}`);
+        ++itemRandom
+    } catch (err){
+        console.log(`Can't read file. Error: ${err}`)
+    }
 })
 
-app.get('/items', (req, res) => {
-    res.send({items:[`${producto}`], cantidad: "(cantidad de productos)"})
-})
+app.get('/visitas', (req, res) => {
+    res.send(`{visitas: {items: ${items}, item: ${itemRandom}}}`
+)})

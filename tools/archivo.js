@@ -1,17 +1,15 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const fileName = "./productos.txt"
-
-export class Archivo{
+class Archivo{
     constructor(fileName){
         this.fileName = fileName;
     }
     
     async leer(){
         try {
-            if(!fs.existsSync('./productos.txt')) fs.promises.writeFile('./productos.txt', '[]');
-            let file = await fs.promises.readFile(fileName, 'utf-8');
-            console.log(file);
+            if(!fs.existsSync(this.fileName)) await fs.promises.writeFile(this.fileName, '[]');
+            let file = await fs.promises.readFile(this.fileName, 'utf-8');
+            return file;
         } catch (err){
             console.log(`La ruta del archivo no coincide. ${err}`);
         }
@@ -19,7 +17,7 @@ export class Archivo{
 
     async guardar(product){
         try{
-            let file = await fs.promises.readFile(fileName, 'utf-8',);
+            let file = await fs.promises.readFile(this.fileName, 'utf-8',);
             let fileParsed = JSON.parse(file);
             const content = {
                 title: product.title,
@@ -28,7 +26,7 @@ export class Archivo{
                 id: fileParsed.length + 1
                }
             fileParsed.push(content);
-            await fs.promises.writeFile(fileName, JSON.stringify(fileParsed,null,'\t'));
+            await fs.promises.writeFile(this.fileName, JSON.stringify(fileParsed,null,'\t'));
         }catch (err){
             console.log(`No se pudo guardar el archivo: ${err}`);
         }
@@ -36,11 +34,11 @@ export class Archivo{
 
     async borrar(){
         try{
-            await fs.promises.unlink(fileName);
+            await fs.promises.unlink(this.fileName);
         } catch (err) {
             console.log(`No se pudo borrar el archivo. ${err}`);
         }
     }
 };
 
-
+export default Archivo;
