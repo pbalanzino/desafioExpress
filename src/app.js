@@ -1,6 +1,6 @@
 import express from 'express';
 import Archivo from '../tools/archivo.js';
-import { counterArray, itemsArray } from '../tools/funciones.js'
+import { itemsArray } from '../tools/funciones.js'
 
 const app = express();
 const PORT = 8080;
@@ -14,28 +14,30 @@ let itemRandom = 0;
 
 app.get('/items', async(req, res) => {
     try{
-        const file = new Archivo('./data/productos.txt');
-        const content = await file.leer();
-        const parsedContent = JSON.parse(content);
-        const arrayContent  = parsedContent.map(item => item.title)
-        res.send(`{items: ${arrayContent}, cantindad: ${arrayContent.length}}`);
+        // const file = new Archivo('./data/productos.txt');
+        // const content = await file.leer();
+        // const parsedContent = JSON.parse(content);
+        // const arrayContent  = parsedContent.map(item => item.title)
+        const arrayContent  = await itemsArray();
+        res.send(`{items: ${arrayContent}, cantidad: ${arrayContent.length}}`);
         ++items
     } catch (err){
-        console.log(`Can't read file. Error: ${err}`)
+        console.log(`Error: ${err}`)
     }
 })
 
 app.get('/item-random', async(req, res) => {
     try {
-        const file = new Archivo('../desafio/data/productos.txt');
-        const content = await file.leer();
-        const parsedContent = JSON.parse(content);
-        const arrayContent  = parsedContent.map(item => item.title)
-        const random  = (Math.random() * arrayContent.length).toFixed()
+        // const file = new Archivo('./data/productos.txt');
+        // const content = await file.leer();
+        // const parsedContent = JSON.parse(content);
+        // const arrayContent  = parsedContent.map(item => item.title)
+        const arrayContent  = await itemsArray()
+        const random  = (Math.random() * (arrayContent.length - 1)).toFixed()
         res.send(`{item: ${arrayContent[random]}}`);
         ++itemRandom
     } catch (err){
-        console.log(`Can't read file. Error: ${err}`)
+        console.log(`Error: ${err}`)
     }
 })
 
